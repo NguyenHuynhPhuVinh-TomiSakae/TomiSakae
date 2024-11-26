@@ -18,7 +18,7 @@ export default function Index() {
         <Header />
         <div className="w-full space-y-8">
           <GitHubStats />
-          <div className="grid md:grid-cols-2 gap-8">
+          <div className="flex flex-col gap-8">
             <TechStack />
             <Projects />
           </div>
