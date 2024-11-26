@@ -1,3 +1,6 @@
+import { motion } from "framer-motion";
+import { useScrollAnimation } from "../hooks/useScroll";
+
 interface TechItem {
     name: string;
     imgSrc: string;
@@ -64,43 +67,94 @@ const technologies: TechItem[] = [
     { name: "Vercel", imgSrc: "https://ziadoua.github.io/m3-Markdown-Badges/badges/Vercel/vercel1.svg", category: "Cloud & DevOps" },
 ];
 
+// Tạo một hàm helper để lấy danh sách categories duy nhất
+const getUniqueCategories = (technologies: TechItem[]): string[] => {
+    return Array.from(new Set(technologies.map(tech => tech.category)));
+};
+
 export default function TechStack() {
-    const categories = Array.from(new Set(technologies.map(tech => tech.category)));
+    const { ref, isInView } = useScrollAnimation();
+    const uniqueCategories = getUniqueCategories(technologies);
+
+    const container = {
+        hidden: { opacity: 0, y: 50 },
+        show: {
+            opacity: 1,
+            y: 0,
+            transition: {
+                duration: 0.8,
+                staggerChildren: 0.15
+            }
+        }
+    };
+
+    const categoryAnimation = {
+        hidden: { opacity: 0, x: -30 },
+        show: {
+            opacity: 1,
+            x: 0,
+            transition: {
+                duration: 0.5,
+                ease: "easeOut"
+            }
+        }
+    };
+
+    const techItem = {
+        hidden: { opacity: 0, scale: 0.8 },
+        show: {
+            opacity: 1,
+            scale: 1,
+            transition: {
+                duration: 0.3,
+                ease: "easeOut"
+            }
+        }
+    };
 
     return (
-        <section className="bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-gray-700/50 hover:border-blue-500/50 transition-colors duration-300">
-            <h2 className="text-2xl font-bold mb-6 text-white flex items-center gap-2">
-                <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M6.5 2H17.5C19.433 2 21 3.567 21 5.5V18.5C21 20.433 19.433 22 17.5 22H6.5C4.567 22 3 20.433 3 18.5V5.5C3 3.567 4.567 2 6.5 2Z" stroke="currentColor" strokeWidth="2" />
-                    <path d="M12 8V16M8 12H16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-                </svg>
-                Tech Stack
-            </h2>
+        <motion.section
+            ref={ref}
+            variants={container}
+            initial="hidden"
+            animate={isInView ? "show" : "hidden"}
+            className="bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 shadow-lg"
+        >
+            <h2 className="text-2xl font-bold mb-6 text-white">Tech Stack</h2>
 
             <div className="space-y-8">
-                {categories.map(category => (
-                    <div key={category}>
-                        <h3 className="text-lg font-semibold text-blue-400 mb-4">{category}</h3>
-                        <div className="flex flex-wrap gap-2">
+                {uniqueCategories.map(category => (
+                    <motion.div
+                        key={category}
+                        variants={categoryAnimation}
+                        className="space-y-4"
+                    >
+                        <h3 className="text-lg font-semibold text-blue-400">{category}</h3>
+                        <div className="flex flex-wrap gap-3">
                             {technologies
-                                .filter(tech => tech.category === category)
-                                .map((tech) => (
-                                    <div
+                                .filter((tech: TechItem) => tech.category === category)
+                                .map(tech => (
+                                    <motion.div
                                         key={tech.name}
-                                        className="transition-transform duration-300 hover:-translate-y-1"
+                                        variants={techItem}
+                                        whileHover={{
+                                            y: -5,
+                                            scale: 1.1,
+                                            transition: { type: "spring", stiffness: 300 }
+                                        }}
                                     >
                                         <img
                                             src={tech.imgSrc}
                                             alt={tech.name}
-                                            className="h-7"
+                                            className="h-8"
                                             loading="lazy"
                                         />
-                                    </div>
+                                    </motion.div>
                                 ))}
                         </div>
-                    </div>
+                    </motion.div>
                 ))}
             </div>
-        </section>
+        </motion.section>
     );
 }
