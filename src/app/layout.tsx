@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "TomiSakae",
-  description: "Trang web cá nhân của TomiSakae",
+  description: "Trang web cá nhân của TomiSakae!",
 };
 
 export default function RootLayout({
